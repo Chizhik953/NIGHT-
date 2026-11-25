@@ -564,6 +564,63 @@ function drawMonster() {
 }
 
 function drawDarkness() {
+  // Лёгкое затемнение всей карты
+  ctx.save();
+  ctx.fillStyle = "rgba(0,0,0,0.28)";
+  ctx.fillRect(0, 0, W, H);
+
+  // Постоянное освещение вокруг игрока
+  ctx.globalCompositeOperation = "destination-out";
+
+  const radius = flashlight ? 300 : 160;
+
+  const glow = ctx.createRadialGradient(
+    player.x, player.y, 5,
+    player.x, player.y, radius
+  );
+
+  glow.addColorStop(0, "rgba(255,255,255,1)");
+  glow.addColorStop(0.4, "rgba(255,255,255,0.95)");
+  glow.addColorStop(0.75, "rgba(255,255,255,0.65)");
+  glow.addColorStop(1, "rgba(255,255,255,0)");
+
+  ctx.fillStyle = glow;
+  ctx.beginPath();
+  ctx.arc(player.x, player.y, radius, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Яркий широкий луч фонарика
+  if (flashlight) {
+    const angle = Math.atan2(player.dy, player.dx);
+    const reach = 720;
+    const spread = 0.85;
+
+    ctx.beginPath();
+    ctx.moveTo(player.x, player.y);
+    ctx.arc(
+      player.x, player.y,
+      reach,
+      angle - spread,
+      angle + spread
+    );
+    ctx.closePath();
+
+    const beam = ctx.createRadialGradient(
+      player.x, player.y, 10,
+      player.x, player.y, reach
+    );
+
+    beam.addColorStop(0, "rgba(255,255,255,1)");
+    beam.addColorStop(0.5, "rgba(255,255,255,0.95)");
+    beam.addColorStop(0.8, "rgba(255,255,255,0.55)");
+    beam.addColorStop(1, "rgba(255,255,255,0)");
+
+    ctx.fillStyle = beam;
+    ctx.fill();
+  }
+
+  ctx.restore();
+}
   ctx.save();
 
   ctx.fillStyle = "rgba(0,0,0,0.95)";
