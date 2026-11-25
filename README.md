@@ -18,3 +18,4 @@ Open `index.html` in a browser, or publish this repository with GitHub Pages.
 
 ## GitHub Pages
 Repository → Settings → Pages → Deploy from a branch → `main` → `/ (root)` → Save.
+\n\n## Глава 1 — Первая смена\nВ первой главе добавлены сюжетные диалоги по рации, вступление Алекса и тревожные сообщения при сборе предохранителей. Управление осталось прежним.\n

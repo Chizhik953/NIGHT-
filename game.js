@@ -5,6 +5,19 @@ const overlay=document.getElementById('overlay'),startBtn=document.getElementByI
 let W=360,H=640,dpr=1,running=false,won=false,lost=false,last=0,parts=0,battery=100,flash=true;
 let player={x:180,y:490,r:9,speed:115,angle:-Math.PI/2},monster={x:180,y:105,r:12,speed:37};
 let items=[],walls=[],exit={x:180,y:52,w:54,h:24},keys={x:0,y:0},joystick={x:0,y:0},touchId=null;
+const storyBox=document.getElementById('story'),storySpeaker=document.getElementById('story-speaker'),storyLine=document.getElementById('story-line'),storyNext=document.getElementById('story-next');
+let storyQueue=[],storyActive=false,storyStage=0,monsterAwake=false,radioScareShown=false;
+function say(lines,after){
+  storyQueue=lines.slice();storyAfter=after||null;showLine();
+}
+let storyAfter=null;
+function showLine(){
+  if(!storyQueue.length){storyBox.classList.add('hidden');storyActive=false;const cb=storyAfter;storyAfter=null;if(cb)cb();return;}
+  storyActive=true;const line=storyQueue.shift();storySpeaker.textContent=line[0];storyLine.textContent=line[1];storyNext.textContent=storyQueue.length?'ДАЛЬШЕ':'ПОНЯТНО';
+  storyBox.classList.remove('hidden');
+}
+storyNext.addEventListener('click',showLine);
+
 function resize(){const r=canvas.getBoundingClientRect();dpr=Math.min(devicePixelRatio||1,2);W=r.width;H=r.height;canvas.width=W*dpr;canvas.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);makeMap();}
 function makeMap(){walls=[];const sx=W/360,sy=H/640;
  // Interior room boundaries and scattered obstacles
@@ -65,20 +78,40 @@ function draw(){ctx.fillStyle='#101814';ctx.fillRect(0,0,W,H);
  }
  ctx.restore();
 }
-function update(dt){if(!running)return;
+function update(dt){if(!running||storyActive)return;
  const len=Math.hypot(joystick.x,joystick.y)||1;
  const inputPower=Math.min(1,Math.hypot(joystick.x,joystick.y));
  if(inputPower>0.08)player.angle=Math.atan2(joystick.y,joystick.x);
  move(player,joystick.x/len*player.speed*dt*inputPower,joystick.y/len*player.speed*dt*inputPower);
  if(flash&&battery>0)battery=Math.max(0,battery-3.8*dt);
- items.forEach(it=>{if(!it.taken&&Math.hypot(player.x-it.x,player.y-it.y)<22){it.taken=true;parts++;partsEl.textContent=parts+' / 3';message.textContent='ПРЕДОХРАНИТЕЛЬ НАЙДЕН'}});
- let dx=player.x-monster.x,dy=player.y-monster.y,d=Math.hypot(dx,dy)||1;let speed=monster.speed+(parts*4);if(d<220)move(monster,dx/d*speed*dt,dy/d*speed*dt);
+ items.forEach(it=>{if(!it.taken&&Math.hypot(player.x-it.x,player.y-it.y)<22){
+   it.taken=true;parts++;partsEl.textContent=parts+' / 3';
+   message.textContent=parts<3?'ПРЕДОХРАНИТЕЛЬ НАЙДЕН — '+parts+' / 3':'ВСЕ ПРЕДОХРАНИТЕЛИ СОБРАНЫ. К ВЫХОДУ!';
+   if(parts===1)say([['АЛЕКС','Первый предохранитель. На корпусе дата: 12 лет назад. Странно...'],['РАЦИЯ — ВИКТОР','Не читай надписи. Просто найди остальные.']]);
+   if(parts===2)say([['АЛЕКС','Виктор, ты слышал шаги? Кажется, кто-то идёт за мной.'],['РАЦИЯ — ВИКТОР','Не может быть. Я один в комнате охраны. Продолжай.']]);
+   if(parts===3&&!radioScareShown){radioScareShown=true;monster.speed=monsterAwake?48:37;say([['РАЦИЯ — НЕИЗВЕСТНЫЙ','Алекс... Ты уже вернулся?'],['АЛЕКС','Нет. Я всё ещё в подвале.'],['РАЦИЯ — НЕИЗВЕСТНЫЙ','Тогда кто сейчас стоит возле меня?'],['СИСТЕМА','СВЯЗЬ ОБОРВАНА. В КОРИДОРЕ СЛЫШНЫ ШАГИ.']]);}
+ } });
+ let dx=player.x-monster.x,dy=player.y-monster.y,d=Math.hypot(dx,dy)||1;let speed=monster.speed+(parts*4);if(monsterAwake&&d<260)move(monster,dx/d*speed*dt,dy/d*speed*dt);
  if(d<player.r+monster.r+4){end(false)}
  if(parts===3&&Math.hypot(player.x-exit.x,player.y-exit.y)<34)end(true);
  batteryEl.textContent=Math.ceil(battery)+'%';
 }
-function end(win){running=false;won=win;lost=!win;overlay.classList.remove('hidden');title.innerHTML=win?'ТЫ <span>ВЫЖИЛ</span>':'ТЕБЯ <span>НАШЛИ</span>';desc.textContent=win?'Ты собрал все предохранители и выбрался. Но это только начало...':'Монстр настиг тебя в темноте. Попробуй ещё раз.';startBtn.textContent='ИГРАТЬ СНОВА'}
-function reset(){parts=0;battery=100;flash=true;partsEl.textContent='0 / 3';batteryEl.textContent='100%';message.textContent='НАЙДИ 3 ПРЕДОХРАНИТЕЛЯ И ДОБЕРИСЬ ДО ВЫХОДА';makeMap();running=true;overlay.classList.add('hidden');last=performance.now()}
+function end(win){storyBox.classList.add('hidden');storyActive=false;running=false;won=win;lost=!win;overlay.classList.remove('hidden');title.innerHTML=win?'ТЫ <span>ВЫЖИЛ</span>':'ТЕБЯ <span>НАШЛИ</span>';desc.textContent=win?'Ты собрал все предохранители и выбрался. Но это только начало...':'Монстр настиг тебя в темноте. Попробуй ещё раз.';startBtn.textContent='ИГРАТЬ СНОВА'}
+function reset(){
+ storyBox.classList.add('hidden');storyActive=false;
+ parts=0;battery=100;flash=true;storyStage=0;monsterAwake=false;radioScareShown=false;
+ partsEl.textContent='0 / 3';batteryEl.textContent='100%';
+ message.textContent='НАЙДИ ФОНАРИК И СПУСТИСЬ В ПОДВАЛ';
+ makeMap();running=true;overlay.classList.add('hidden');last=performance.now();
+ monster.speed=0;
+ say([
+  ['АЛЕКС','23:47. Первая ночная смена. Не понимаю, зачем охранять место, которое закрыли двенадцать лет назад.'],
+  ['РАЦИЯ — ВИКТОР','Новый охранник? Слышишь меня? Меня зовут Виктор. Проверка связи.'],
+  ['АЛЕКС','Слышу. Что нужно делать?'],
+  ['ВИКТОР','В подвале три предохранителя. Найди их и восстанови питание. Потом возвращайся в комнату охраны.'],
+  ['ВИКТОР','И ещё... Если увидишь кого-нибудь в коридоре — не подходи. Здесь никого быть не должно.']
+ ],()=>{message.textContent='НАЙДИ 3 ПРЕДОХРАНИТЕЛЯ. НЕ ЗАДЕРЖИВАЙСЯ.';monster.speed=37;monsterAwake=true;});
+}
 function loop(t){let dt=Math.min((t-last)/1000,.04);last=t;update(dt);draw();requestAnimationFrame(loop)}
 startBtn.addEventListener('click',reset);
 document.getElementById('light').addEventListener('click',()=>{flash=!flash});
