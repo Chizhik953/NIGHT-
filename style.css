@@ -6,9 +6,9 @@
 }
 
 body {
-  background: #030608;
-  color: #dce5e8;
-  font-family: Arial, sans-serif;
+  background: #030407;
+  color: #e4e4e4;
+  font-family: monospace;
   overflow: hidden;
   touch-action: none;
 }
@@ -19,7 +19,7 @@ body {
   max-width: 1100px;
   margin: auto;
   position: relative;
-  background: #080d10;
+  background: #090b10;
   overflow: hidden;
 }
 
@@ -29,41 +29,42 @@ header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: #080e12;
-  border-bottom: 1px solid #26343b;
+  background: #090b10;
+  border-bottom: 3px solid #252a32;
   position: relative;
   z-index: 2;
 }
 
 .logo {
-  font-size: 17px;
+  font-size: 16px;
   font-weight: bold;
   letter-spacing: 2px;
-  color: #d9e6e9;
+  color: #e5e8ed;
+  text-shadow: 2px 2px #7e242c;
 }
 
 .logo span {
   display: block;
-  font-size: 10px;
-  color: #72858d;
+  font-size: 9px;
+  color: #8e969e;
   margin-top: 5px;
-  letter-spacing: 1px;
+  letter-spacing: 2px;
 }
 
 .hud {
   text-align: right;
   font-size: 10px;
-  line-height: 1.7;
-  color: #81949c;
+  line-height: 1.8;
+  color: #9ba4ad;
 }
 
 .hud b {
-  color: #d7e7e9;
+  color: #e9e9e9;
   margin-left: 5px;
 }
 
 #zone-label {
-  color: #b84a4a;
+  color: #d45a5a;
   font-weight: bold;
 }
 
@@ -71,27 +72,28 @@ header {
   display: block;
   width: 100%;
   height: calc(100% - 75px);
-  background: #090e10;
+  background: #11151b;
+  image-rendering: pixelated;
   touch-action: none;
 }
 
 #message {
   position: absolute;
-  top: 90px;
+  top: 88px;
   left: 50%;
   transform: translateX(-50%);
   width: 90%;
   text-align: center;
-  color: #d4dadd;
-  font-size: 12px;
-  text-shadow: 0 0 8px black;
+  color: #e3e7eb;
+  font-size: 11px;
+  text-shadow: 2px 2px 3px #000;
   pointer-events: none;
   z-index: 3;
 }
 
 #controls {
   position: absolute;
-  bottom: 22px;
+  bottom: 20px;
   left: 0;
   width: 100%;
   display: flex;
@@ -105,8 +107,8 @@ header {
 #stick {
   width: 112px;
   height: 112px;
-  border: 2px solid #81949c55;
-  background: #18252b88;
+  border: 3px solid #87919b66;
+  background: #1a202b99;
   border-radius: 50%;
   position: relative;
   pointer-events: auto;
@@ -117,34 +119,40 @@ header {
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  background: #9eafb477;
-  border: 2px solid #c5d4d866;
+  background: #aeb9c477;
+  border: 3px solid #d5dce066;
   position: absolute;
-  left: 30px;
-  top: 30px;
+  left: 29px;
+  top: 29px;
 }
 
 #flash {
   width: 76px;
   height: 76px;
   border-radius: 50%;
-  background: #d7d9bd;
-  color: #111820;
-  border: 3px solid #89949a;
-  font-size: 35px;
-  box-shadow: 0 0 22px #d6dfb455;
+  background: #d6d0a9;
+  color: #171923;
+  border: 4px solid #77796e;
+  font-size: 36px;
+  box-shadow: 0 0 20px #e7e0a544;
   pointer-events: auto;
-  touch-action: none;
+  touch-action: manipulation;
 }
 
 #flash:active {
   transform: scale(.93);
 }
 
+#flash.off {
+  opacity: .45;
+  box-shadow: none;
+  background: #56575a;
+}
+
 #overlay {
   position: absolute;
   inset: 0;
-  background: #020507ed;
+  background: #030408ed;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -154,45 +162,46 @@ header {
 
 .panel {
   width: 100%;
-  max-width: 420px;
+  max-width: 430px;
   padding: 30px 22px;
-  background: #0c1419;
-  border: 1px solid #35464e;
-  box-shadow: 0 0 35px #000;
+  background: #10131b;
+  border: 3px solid #3d4654;
+  box-shadow: 7px 7px #050609;
   text-align: center;
 }
 
 .eyebrow {
-  color: #a94c4c;
-  font-size: 11px;
+  color: #c34e55;
+  font-size: 10px;
   letter-spacing: 3px;
   margin-bottom: 20px;
 }
 
 h1 {
-  font-size: 29px;
+  font-size: 27px;
   letter-spacing: 3px;
   margin-bottom: 22px;
+  text-shadow: 3px 3px #7e242c;
 }
 
 .panel p {
-  color: #9aaab0;
-  font-size: 14px;
-  line-height: 1.7;
+  color: #aab1bb;
+  font-size: 13px;
+  line-height: 1.8;
   margin-bottom: 25px;
 }
 
 button {
   cursor: pointer;
-  font-family: inherit;
+  font-family: monospace;
 }
 
 #start,
 #story-next {
   width: 100%;
   padding: 15px;
-  background: #9e3535;
-  border: 1px solid #d05c5c;
+  background: #8e3038;
+  border: 3px solid #d05a62;
   color: white;
   font-weight: bold;
   letter-spacing: 2px;
@@ -200,14 +209,15 @@ button {
 
 #start:active,
 #story-next:active {
-  background: #c34b4b;
+  background: #bd454d;
 }
 
 .panel small {
   display: block;
-  color: #61727a;
+  color: #76808d;
   margin-top: 20px;
-  font-size: 11px;
+  font-size: 10px;
+  line-height: 1.6;
 }
 
 #story {
@@ -216,23 +226,23 @@ button {
   bottom: 155px;
   width: 90%;
   padding: 18px;
-  background: #071014ed;
-  border: 1px solid #53646b;
+  background: #080b12f2;
+  border: 2px solid #68717d;
   z-index: 8;
-  box-shadow: 0 0 25px #000;
+  box-shadow: 5px 5px #000;
 }
 
 .story-tag {
   font-size: 10px;
   letter-spacing: 2px;
-  color: #b75a5a;
+  color: #d15b63;
   margin-bottom: 12px;
 }
 
 #story-text {
-  font-size: 14px;
-  line-height: 1.6;
-  color: #d2dcdf;
+  font-size: 13px;
+  line-height: 1.7;
+  color: #e0e3e8;
   margin-bottom: 15px;
 }
 
@@ -255,8 +265,8 @@ button {
   }
 
   #knob {
-    left: 23px;
-    top: 23px;
+    left: 17px;
+    top: 17px;
   }
 
   #controls {
