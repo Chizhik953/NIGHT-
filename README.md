@@ -1,21 +1,36 @@
-# PROJECT: NIGHT
+# PROJECT: NIGHT — Последняя смена
 
-A mobile-first 2D survival horror prototype for iPhone.
+2D хоррор-игра на выживание.
 
-## Run
-Open `index.html` in a browser, or publish this repository with GitHub Pages.
+## Сюжет
 
-## Controls
-- Drag the on-screen joystick to move and aim the flashlight.
-- Tap the flashlight button to toggle the beam.
-- Collect 3 fuses and reach the exit.
-- Avoid the creature.
+2039 год. Ты играешь за Алекса, которому предстоит пройти ночную смену в заброшенном исследовательском комплексе «Ночной-13».
 
-## Flashlight update
-- Directional cone follows the player's movement direction.
-- Soft beam falloff and a weak emergency glow when switched off or empty.
-- Battery drains while the flashlight is on and the beam flickers below 20%.
+Но в здании ты не один.
 
-## GitHub Pages
-Repository → Settings → Pages → Deploy from a branch → `main` → `/ (root)` → Save.
-\n\n## Глава 1 — Первая смена\nВ первой главе добавлены сюжетные диалоги по рации, вступление Алекса и тревожные сообщения при сборе предохранителей. Управление осталось прежним.\n
+## Особенности
+
+- Три игровые локации.
+- Шесть предохранителей.
+- Поиск батареек.
+- Улучшенный фонарик.
+- Опасный монстр.
+- Сюжетные события.
+- Управление для телефона.
+
+## Управление
+
+- Джойстик — движение.
+- Кнопка с лампочкой — включение фонарика.
+- Нажатие на выход — переход в следующую локацию.
+
+## Технологии
+
+- HTML
+- CSS
+- JavaScript
+- Canvas
+
+## Автор
+
+PROJECT: NIGHT
