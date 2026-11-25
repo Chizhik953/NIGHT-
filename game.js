@@ -3,7 +3,7 @@ const canvas=document.getElementById('game'),ctx=canvas.getContext('2d');
 const partsEl=document.getElementById('parts'),batteryEl=document.getElementById('battery'),message=document.getElementById('message');
 const overlay=document.getElementById('overlay'),startBtn=document.getElementById('start'),title=document.getElementById('overlay-title'),desc=document.getElementById('overlay-text');
 let W=360,H=640,dpr=1,running=false,won=false,lost=false,last=0,parts=0,battery=100,flash=true;
-let player={x:180,y:490,r:9,speed:115},monster={x:180,y:105,r:12,speed:37};
+let player={x:180,y:490,r:9,speed:115,angle:-Math.PI/2},monster={x:180,y:105,r:12,speed:37};
 let items=[],walls=[],exit={x:180,y:52,w:54,h:24},keys={x:0,y:0},joystick={x:0,y:0},touchId=null;
 function resize(){const r=canvas.getBoundingClientRect();dpr=Math.min(devicePixelRatio||1,2);W=r.width;H=r.height;canvas.width=W*dpr;canvas.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);makeMap();}
 function makeMap(){walls=[];const sx=W/360,sy=H/640;
@@ -33,17 +33,44 @@ function draw(){ctx.fillStyle='#101814';ctx.fillRect(0,0,W,H);
  ctx.fillStyle='#090b0a';ctx.beginPath();ctx.arc(monster.x,monster.y,monster.r+4,0,Math.PI*2);ctx.fill();ctx.fillStyle='#a43f38';ctx.beginPath();ctx.arc(monster.x-4,monster.y-2,2,0,7);ctx.arc(monster.x+4,monster.y-2,2,0,7);ctx.fill();
  // player
  ctx.fillStyle='#c4d3b5';ctx.beginPath();ctx.arc(player.x,player.y,player.r,0,7);ctx.fill();ctx.fillStyle='#26342a';ctx.fillRect(player.x-3,player.y-2,6,4);
- // darkness overlay with a transparent flashlight area
- const radius=flash&&battery>0?Math.min(W*.48,145):65;
- const dark=ctx.createRadialGradient(player.x,player.y,Math.max(8,radius*.18),player.x,player.y,radius);
- dark.addColorStop(0,'rgba(0,0,0,0)');
- dark.addColorStop(.62,'rgba(0,0,0,.48)');
- dark.addColorStop(1,'rgba(0,0,0,.94)');
- ctx.fillStyle=dark;ctx.fillRect(0,0,W,H);
+ // deep darkness, then carve out a soft directional flashlight beam
+ ctx.save();
+ const lowBattery=battery>0&&battery<20;
+ const flicker=lowBattery && Math.sin(performance.now()/75)>0.82;
+ ctx.fillStyle=(flash&&battery>0&&!flicker)?'rgba(0,0,0,.91)':'rgba(0,0,0,.96)';
+ ctx.fillRect(0,0,W,H);
+ if(flash&&battery>0&&!flicker){
+   const reach=Math.min(W*.78,255)*(0.72+0.28*(battery/100));
+   const spread=0.48;
+   ctx.save();
+   ctx.globalCompositeOperation='destination-out';
+   ctx.beginPath();
+   ctx.moveTo(player.x,player.y);
+   ctx.arc(player.x,player.y,reach,player.angle-spread,player.angle+spread);
+   ctx.closePath();ctx.clip();
+   const beam=ctx.createRadialGradient(player.x,player.y,8,player.x,player.y,reach);
+   beam.addColorStop(0,'rgba(0,0,0,1)');
+   beam.addColorStop(.58,'rgba(0,0,0,.94)');
+   beam.addColorStop(.84,'rgba(0,0,0,.55)');
+   beam.addColorStop(1,'rgba(0,0,0,0)');
+   ctx.fillStyle=beam;ctx.fillRect(player.x-reach,player.y-reach,reach*2,reach*2);
+   ctx.restore();
+ }
+ // weak emergency glow when the flashlight is off or empty
+ if(!flash||battery<=0){
+   ctx.globalCompositeOperation='destination-out';
+   const glow=ctx.createRadialGradient(player.x,player.y,2,player.x,player.y,43);
+   glow.addColorStop(0,'rgba(0,0,0,.48)');glow.addColorStop(1,'rgba(0,0,0,0)');
+   ctx.fillStyle=glow;ctx.beginPath();ctx.arc(player.x,player.y,43,0,Math.PI*2);ctx.fill();
+ }
+ ctx.restore();
 }
 function update(dt){if(!running)return;
- const len=Math.hypot(joystick.x,joystick.y)||1;move(player,joystick.x/len*player.speed*dt*Math.min(1,Math.hypot(joystick.x,joystick.y)),joystick.y/len*player.speed*dt*Math.min(1,Math.hypot(joystick.x,joystick.y)));
- if(flash&&battery>0)battery=Math.max(0,battery-4.5*dt);
+ const len=Math.hypot(joystick.x,joystick.y)||1;
+ const inputPower=Math.min(1,Math.hypot(joystick.x,joystick.y));
+ if(inputPower>0.08)player.angle=Math.atan2(joystick.y,joystick.x);
+ move(player,joystick.x/len*player.speed*dt*inputPower,joystick.y/len*player.speed*dt*inputPower);
+ if(flash&&battery>0)battery=Math.max(0,battery-3.8*dt);
  items.forEach(it=>{if(!it.taken&&Math.hypot(player.x-it.x,player.y-it.y)<22){it.taken=true;parts++;partsEl.textContent=parts+' / 3';message.textContent='ПРЕДОХРАНИТЕЛЬ НАЙДЕН'}});
  let dx=player.x-monster.x,dy=player.y-monster.y,d=Math.hypot(dx,dy)||1;let speed=monster.speed+(parts*4);if(d<220)move(monster,dx/d*speed*dt,dy/d*speed*dt);
  if(d<player.r+monster.r+4){end(false)}
