@@ -1,12 +1,12 @@
 {
   "name": "PROJECT: NIGHT",
   "short_name": "NIGHT",
-  "description": "Хоррор-игра на выживание: Последняя смена",
+  "description": "Пиксельный хоррор на выживание",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "orientation": "landscape",
-  "background_color": "#030608",
-  "theme_color": "#050709",
+  "background_color": "#030407",
+  "theme_color": "#08090d",
   "icons": []
 }
